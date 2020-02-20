@@ -8,3 +8,70 @@ GAME RULES:
 - The first player to reach 100 points on GLOBAL score wins the game
 
 */
+
+var scores, roundScore, activePlayer, dice;
+resetGame();
+
+function switchPlayer() {
+    document.getElementById(`score-${activePlayer}`).textContent = scores[activePlayer];
+
+    activePlayer = activePlayer === 0 ? 1 : 0;
+    roundScore = 0;
+    document.querySelector(".dice").style.display = "none";
+
+    for (let i = 0; i < 2; i++) {
+        document.getElementById(`current-${i}`).textContent = "0";
+        document.querySelector(`.player-${i}-panel`).classList.toggle("active")
+    }
+}
+
+function resetGame() {
+    scores = [ 0, 0 ]
+    roundScore = 0;
+    activePlayer = 0;
+    document.querySelector(".dice").style.display = "none";
+    document.querySelector(".btn-roll").style.display = "block";
+    document.querySelector(".btn-hold").style.display = "block";
+
+    for (let i = 0; i < 2; i++) {
+        document.getElementById(`score-${i}`).textContent = "0";
+        document.getElementById(`current-${i}`).textContent = "0";
+        document.querySelector(`.player-${i}-panel`).classList.remove("winner");
+    }
+
+    document.querySelector(`.player-0-panel`).classList.remove("active")
+    document.querySelector(`.player-1-panel`).classList.remove("active")
+    document.querySelector(`.player-0-panel`).classList.add("active")
+}
+
+document.querySelector(".btn-new").addEventListener("click", resetGame);
+
+document.querySelector(".btn-roll").addEventListener("click", function() {
+    let diceValue = Math.floor(Math.random() * 6) + 1;
+
+    let diceDOM = document.querySelector(".dice");
+    diceDOM.style.display = "block";
+    diceDOM.src = `dice-${diceValue}.png`;
+
+    if (diceValue !== 1) {
+        roundScore += diceValue;
+        document.getElementById(`current-${activePlayer}`).textContent = roundScore;
+    } else {
+        switchPlayer();
+    }
+});
+
+document.querySelector(".btn-hold").addEventListener("click", function() {
+    scores[activePlayer] += roundScore;
+
+    if (scores[activePlayer] >= 100) {
+        document.getElementById(`score-${activePlayer}`).textContent = "Winner!";
+        document.querySelector(`.player-${activePlayer}-panel`).classList.add("winner");
+        document.querySelector(`.player-${activePlayer}-panel`).classList.remove("active");
+        document.querySelector(".dice").style.display = "none";
+        document.querySelector(".btn-roll").style.display = "none";
+        document.querySelector(".btn-hold").style.display = "none";
+    } else {
+        switchPlayer();
+    }
+});
