@@ -18,7 +18,7 @@ function switchPlayer() {
     activePlayer = activePlayer === 0 ? 1 : 0;
     roundScore = 0;
     lastRoll = null;
-    document.querySelector(".dice").style.display = "none";
+    document.querySelector(".dice-box").style.display = "none";
 
     for (let i = 0; i < 2; i++) {
         document.getElementById(`current-${i}`).textContent = "0";
@@ -34,7 +34,7 @@ function resetGame() {
     lastRoll = 0;
     document.querySelector(".end-score").style.display = "block";
     document.getElementById("end-score-input").value = "100";
-    document.querySelector(".dice").style.display = "none";
+    document.querySelector(".dice-box").style.display = "none";
     document.querySelector(".btn-roll").style.display = "block";
     document.querySelector(".btn-hold").style.display = "block";
 
@@ -52,20 +52,26 @@ function resetGame() {
 document.querySelector(".btn-new").addEventListener("click", resetGame);
 
 document.querySelector(".btn-roll").addEventListener("click", function() {
-    let diceValue = Math.floor(Math.random() * 6) + 1;
+    let diceValue1 = Math.floor(Math.random() * 6) + 1;
+    let diceValue2 = Math.floor(Math.random() * 6) + 1;
     document.querySelector(".end-score").style.display = "none";
 
-    let diceDOM = document.querySelector(".dice");
-    diceDOM.style.display = "block";
-    diceDOM.src = `dice-${diceValue}.png`;
+    document.querySelector(".dice-box").style.display = "block";
+    document.getElementById("dice-1").src = `dice-${diceValue1}.png`
+    document.getElementById("dice-2").src = `dice-${diceValue2}.png`
 
-    if (diceValue === 6 && lastRoll == 6) {
-        scores[activePlayer] = 0;
-        roundScore = 0;
-        switchPlayer();
-    } else if (diceValue !== 1) {
-        lastRoll = diceValue;
-        roundScore += diceValue;
+    // Commented out for feature 3 (two dice) which is incompatible
+    // or not compatible enough with this feature. Keeping lastRoll
+    // in case we would want to use it again.
+    //
+    // if (diceValue === 6 && lastRoll == 6) {
+    //     scores[activePlayer] = 0;
+    //     roundScore = 0;
+    //     switchPlayer();
+    // } else if (diceValue !== 1) {
+    if (diceValue1 !== 1 && diceValue2 !== 1) {
+        // lastRoll = diceValue;
+        roundScore += diceValue1 + diceValue2;
         document.getElementById(`current-${activePlayer}`).textContent = roundScore;
     } else {
         switchPlayer();
@@ -79,7 +85,7 @@ document.querySelector(".btn-hold").addEventListener("click", function() {
         document.getElementById(`score-${activePlayer}`).textContent = "Winner!";
         document.querySelector(`.player-${activePlayer}-panel`).classList.add("winner");
         document.querySelector(`.player-${activePlayer}-panel`).classList.remove("active");
-        document.querySelector(".dice").style.display = "none";
+        document.querySelector(".dice-box").style.display = "none";
         document.querySelector(".btn-roll").style.display = "none";
         document.querySelector(".btn-hold").style.display = "none";
     } else {
