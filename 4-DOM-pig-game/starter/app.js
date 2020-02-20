@@ -33,6 +33,7 @@ function resetGame() {
     diceValue = 0;
     lastRoll = 0;
     document.querySelector(".end-score").style.display = "block";
+    document.getElementById("end-score-input").value = "100";
     document.querySelector(".dice").style.display = "none";
     document.querySelector(".btn-roll").style.display = "block";
     document.querySelector(".btn-hold").style.display = "block";
