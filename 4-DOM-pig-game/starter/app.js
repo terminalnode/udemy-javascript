@@ -32,6 +32,7 @@ function resetGame() {
     activePlayer = 0;
     diceValue = 0;
     lastRoll = 0;
+    document.querySelector(".end-score").style.display = "block";
     document.querySelector(".dice").style.display = "none";
     document.querySelector(".btn-roll").style.display = "block";
     document.querySelector(".btn-hold").style.display = "block";
@@ -51,6 +52,7 @@ document.querySelector(".btn-new").addEventListener("click", resetGame);
 
 document.querySelector(".btn-roll").addEventListener("click", function() {
     let diceValue = Math.floor(Math.random() * 6) + 1;
+    document.querySelector(".end-score").style.display = "none";
 
     let diceDOM = document.querySelector(".dice");
     diceDOM.style.display = "block";
@@ -72,7 +74,7 @@ document.querySelector(".btn-roll").addEventListener("click", function() {
 document.querySelector(".btn-hold").addEventListener("click", function() {
     scores[activePlayer] += roundScore;
 
-    if (scores[activePlayer] >= 100) {
+    if (scores[activePlayer] >= document.getElementById("end-score-input").value) {
         document.getElementById(`score-${activePlayer}`).textContent = "Winner!";
         document.querySelector(`.player-${activePlayer}-panel`).classList.add("winner");
         document.querySelector(`.player-${activePlayer}-panel`).classList.remove("active");

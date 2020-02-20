@@ -6,7 +6,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
 }
 
 .clearfix::after {
@@ -80,7 +79,6 @@ body {
     color: #EB4D4D;
     top: -7px;
     right: 10px;
-    
 }
 
 .player-current-box {
@@ -140,6 +138,29 @@ i {
 .btn-new { top: 45px;}
 .btn-roll { top: 403px;}
 .btn-hold { top: 467px;}
+.end-score {
+    position: absolute;
+    left: 50%;
+    top: 180px;
+    text-align: center;
+    transform: translateX(-50%);
+}
+
+#end-score-label {
+    color: #EB4D4D;
+    font-size: 30px;
+}
+
+#end-score-input {
+    font-size: 30px;
+    width: 100px;
+    text-align: center;
+    color: #F7F7F7;
+    background-color: #EB4D4D;
+    border-style: none;
+    padding: 20px;
+    transform: translateY(15px);
+}
 
 .dice {
     position: absolute;
