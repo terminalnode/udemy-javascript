@@ -37,8 +37,6 @@ const budgetController = (function () {
       newItem = new Income(ID, description, value);
     } else if (type === "exp") {
       newItem = new Expense(ID, description, value);
-    } else {
-      console.log("Unknown item type (needs to be inc or exp)!");
     }
 
     // Add new item to list and return it
@@ -59,7 +57,9 @@ const UIController = (function() {
     inputDescription: ".add__description",
     inputValue: ".add__value",
     inputButton: ".add__btn",
-  }
+    incomeList: ".income__list",
+    expenseList: ".expenses__list",
+  };
 
   const getFieldInput = function() {
     return {
@@ -67,10 +67,46 @@ const UIController = (function() {
       description: document.querySelector(DOMClasses.inputDescription).value,
       value: document.querySelector(DOMClasses.inputValue).value
     };
-  }
+  };
+
+  const addListItem = function(newItem, type) {
+    let html, element;
+
+    // Generate the html
+    if (type === "inc") {
+      element = DOMClasses.incomeList;
+      html = `<div class="item clearfix" id="income-${newItem.id}">
+                <div class="item__description">${newItem.description}</div>
+                <div class="right clearfix">
+                  <div class="item__value">+ ${newItem.value}</div>
+                  <div class="item__delete">
+                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+                  </div>
+                </div>
+              </div>`
+    } else if (type === "exp") {
+      element = DOMClasses.expenseList;
+      html = `<div class="item clearfix" id="expense-${newItem.id}">
+                <div class="item__description">${newItem.description}</div>
+                <div class="right clearfix">
+                  <div class="item__value">- ${newItem.value}</div>
+                  <div class="item__percentage">21%</div>
+                  <div class="item__delete">
+                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+                  </div>
+                </div>
+              </div>`
+    }
+
+    // Insert HTML into DOM
+    if (element !== undefined && html !== undefined) {
+      document.querySelector(element).insertAdjacentHTML("beforeend", html);
+    }
+  };
 
   return {
     getFieldInput: getFieldInput,
+    addListItem: addListItem,
     DOMClasses: DOMClasses,
   };
 
@@ -88,6 +124,8 @@ const appController = (function(budgetCtrl, UICtrl) {
     newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
     // 3. Add item to ui controller
+    UICtrl.addListItem(newItem, input.type);
+
     // 4. Calculate budget
     // 5. Update budget in UI
   };
