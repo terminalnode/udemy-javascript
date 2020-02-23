@@ -104,10 +104,24 @@ const UIController = (function() {
     }
   };
 
+  const clearFields = function() {
+    let fields, fieldsArray;
+
+    fields = document.querySelectorAll(`${DOMClasses.inputDescription}, ${DOMClasses.inputValue}`);
+
+    // Convert fields NodeList to an Array
+    fieldsArray = Array.prototype.slice.call(fields);
+    fieldsArray.forEach(function(current) { current.value = ""; });
+
+    // Set focus to DOMClasses.inputDescription which is the first element of our array.
+    fieldsArray[0].focus();
+  };
+
   return {
     getFieldInput: getFieldInput,
     addListItem: addListItem,
     DOMClasses: DOMClasses,
+    clearFields: clearFields,
   };
 
 })();
@@ -123,8 +137,9 @@ const appController = (function(budgetCtrl, UICtrl) {
     // 2. Add item to budget controller
     newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-    // 3. Add item to ui controller
+    // 3. Add item to ui controller and clear the fields
     UICtrl.addListItem(newItem, input.type);
+    UICtrl.clearFields();
 
     // 4. Calculate budget
     // 5. Update budget in UI
