@@ -147,3 +147,67 @@ const g = this.f.bind(this, 1);
 */
 
 // Coding challenge
+const Question = function(question, correct, wrongs) {
+  wrongs.push(correct);
+  this.question = question;
+  this.answers = wrongs;
+  this.correct = correct;
+}
+
+Question.prototype.askQuestion = function() {
+  // Randomise the order
+  this.answers.sort(function(_, _) { return Math.random() - 0.5 });
+  // Print question
+  console.log(this.question);
+  for (let i = 1; i <= this.answers.length; i++) {
+    console.log(`${i}. ${this.answers[i - 1]}`);
+  }
+}
+
+Question.prototype.checkAnswer = function(answer) {
+  return this.answers[answer - 1] === this.correct;
+}
+
+function playGame() {
+  const allQuestions = [
+      new Question(
+        "Is Javascript the best language in the world?",
+        "No",
+        ["Yes", "Maybe", "No but it is the second best"]),
+      new Question(
+        "What's the name of the creator of this quiz?",
+        "Alexander",
+        ["Tiffany", "Lord Cruxifax", "Shmaple"]),
+      new Question(
+        "What's the square root of pi?",
+        "Not 1",
+        ["5", "26", "32", "0", "42"]),
+      new Question(
+        "Is school a place for smart people?",
+        "Lol nope",
+        ["No", "Nah", "Probably not"])
+  ]
+
+  let answer;
+  let playerScore = 0;
+
+  while (answer !== "q" && answer !== null && answer !== "") {
+    const randomQuestion = allQuestions[Math.floor(Math.random() * allQuestions.length)]
+    randomQuestion.askQuestion()
+    answer = window.prompt("Type your answer here:");
+
+    if (answer === "q" || answer === null || answer === "") {
+      console.log("\nThanks for playing!");
+      console.log(`Your final score was ${playerScore}\n\n`);
+
+    } else if (randomQuestion.checkAnswer(answer)) {
+      playerScore++;
+      console.log("\nThat is correct! Well played!");
+      console.log(`Your current score is ${playerScore}\n\n`);
+
+    } else {
+      console.log("\nI'm sorry to say, you're answer is stupid and so are you.\n");
+      console.log(`Your current score is ${playerScore}\n\n`);
+    }
+  }
+}
