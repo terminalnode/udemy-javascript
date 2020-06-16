@@ -138,6 +138,7 @@ const UIController = (function() {
     percentageLabel:    ".budget__expenses--percentage",
     container:          ".container",
     expPercentageLabel: ".item__percentage",
+    dateLabel:          ".budget__title--month",
   };
 
   const getFieldInput = function() {
@@ -146,6 +147,33 @@ const UIController = (function() {
       description: document.querySelector(DOMClasses.inputDescription).value,
       value: parseFloat(document.querySelector(DOMClasses.inputValue).value)
     };
+  };
+
+  const formatNumber = function(num, type) {
+    let numSplit, int, dec;
+
+    num = Math.abs(num);  // Get absolute value of the number.
+    num = num.toFixed(2); // Format number to have 2 decimal points.
+
+    numSplit = num.split(".");
+    int = numSplit[0];
+    dec = numSplit[1];
+    if (int.length > 3) {
+      let afterComma = int.length - 3;
+      int = `${int.substr(0, afterComma)},${int.substr(afterComma, int.length)}`;
+    }
+
+    // Combine int and dec
+    num = `${int}.${dec}`
+
+   // Prepend + or -
+    return type === "inc" ? `+ ${num}` : `- ${num}`;
+  };
+
+  const nodeListForEach = function(list, callback) {
+    for (let i = 0; i < list.length; i++) {
+      callback(list[i], i);
+    }
   };
 
   const addListItem = function(newItem, type) {
@@ -157,7 +185,7 @@ const UIController = (function() {
       html = `<div class="item clearfix" id="inc-${newItem.id}">
                 <div class="item__description">${newItem.description}</div>
                 <div class="right clearfix">
-                  <div class="item__value">+ ${newItem.value}</div>
+                  <div class="item__value">${formatNumber(newItem.value, type)}</div>
                   <div class="item__delete">
                     <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
                   </div>
@@ -168,7 +196,7 @@ const UIController = (function() {
       html = `<div class="item clearfix" id="exp-${newItem.id}">
                 <div class="item__description">${newItem.description}</div>
                 <div class="right clearfix">
-                  <div class="item__value">- ${newItem.value}</div>
+                  <div class="item__value">${formatNumber(newItem.value, type)}</div>
                   <div class="item__percentage">21%</div>
                   <div class="item__delete">
                     <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
@@ -205,9 +233,12 @@ const UIController = (function() {
   };
 
   const displayBudget = function(budgetData) {
-    document.querySelector(DOMClasses.budgetLabel).textContent = budgetData.budget;
-    document.querySelector(DOMClasses.incomeLabel).textContent = budgetData.totalInc;
-    document.querySelector(DOMClasses.expensesLabel).textContent = budgetData.totalExp;
+    let type;
+    type = budgetData.budget >= 0 ? "inc" : "exp";
+
+    document.querySelector(DOMClasses.budgetLabel).textContent = formatNumber(budgetData.budget, type);
+    document.querySelector(DOMClasses.incomeLabel).textContent = formatNumber(budgetData.totalInc, "inc");
+    document.querySelector(DOMClasses.expensesLabel).textContent = formatNumber(budgetData.totalExp, "exp");
     if (budgetData.percentage > 0) {
       document.querySelector(DOMClasses.percentageLabel).textContent = `${budgetData.percentage}%`;
     } else {
@@ -216,15 +247,9 @@ const UIController = (function() {
   };
 
   const displayPercentages = function(percentages) {
-    let fields, nodeListForEach;
+    let fields;
+
     fields = document.querySelectorAll(DOMClasses.expPercentageLabel);
-
-    nodeListForEach = function(list, callback) {
-      for (let i = 0; i < list.length; i++) {
-        callback(list[i], i);
-      }
-    };
-
     nodeListForEach(fields, function(current, index) {
       if (percentages[index] > 0) {
         current.textContent = `${percentages[index]}%`;
@@ -234,6 +259,35 @@ const UIController = (function() {
     });
   };
 
+  const displayMonth = function() {
+    let now, year, month, months;
+    now = new Date();
+    year = now.getFullYear();
+    month = now.getMonth();
+    months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ]
+    document.querySelector(DOMClasses.dateLabel).textContent = `${months[month]} ${year}`;
+  };
+
+  const changedType = function() {
+    let fields;
+    fields = document.querySelectorAll(
+      DOMClasses.inputType + "," +
+      DOMClasses.inputDescription + "," +
+      DOMClasses.inputValue
+    );
+
+    nodeListForEach(fields, function(cur) {
+      cur.classList.toggle("red-focus");
+    });
+
+    document.querySelector(DOMClasses.inputButton)
+      .classList
+      .toggle("red")
+  }
+
   return {
     getFieldInput: getFieldInput,
     addListItem: addListItem,
@@ -242,6 +296,8 @@ const UIController = (function() {
     clearFields: clearFields,
     displayBudget: displayBudget,
     displayPercentages: displayPercentages,
+    displayMonth: displayMonth,
+    changedType: changedType,
   };
 
 })();
@@ -328,11 +384,14 @@ const appController = (function(budgetCtrl, UICtrl) {
     const DOMClasses = UICtrl.DOMClasses;
     document.querySelector(DOMClasses.inputButton).addEventListener("click", addButtonClick);
     document.addEventListener("keypress", keypressEvent);
-    document.querySelector(DOMClasses.container).addEventListener("click", deleteItemClick)
+    document.querySelector(DOMClasses.container).addEventListener("click", deleteItemClick);
+    document.querySelector(DOMClasses.inputType).addEventListener("change", UIController.changedType);
+    document.querySelector(DOMClasses.inputType).options[0].selected = 1;
   };
 
   const init = function() {
     console.log("Application has started.");
+    UIController.displayMonth();
     setupEventListeners();
     updateBudget();
   };
