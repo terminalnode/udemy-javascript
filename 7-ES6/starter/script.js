@@ -1,5 +1,3 @@
-console.log("Hello.");
-
 // Lecture: let and const
 // ES5
 var name5 = "Jane Smith";
@@ -179,3 +177,144 @@ console.log(`His name is ${firstNameD} ${lastNameD}!`)
 // Method two: Not stupid
 let {firstNameD: a180, lastNameD: b180} = johnObject;
 console.log(`His name is ${a180} ${b180}!`)
+
+////////////////////////////////
+// Lecture: Arrays in ES6
+const boxes = document.querySelectorAll(".box");
+
+// ES5, making the boxes node list thing into an array.
+var boxesArr5 = Array.prototype.slice.call(boxes);
+
+// ES6
+const boxesArr6 = Array.from(boxes);
+// boxesArr6.forEach(cur => cur.style.backgroundColor = "dodgerblue");
+
+// ES5, lame for-loop
+/*
+for (let i = 0; i < boxesArr5.length; i++) {
+  if (boxesArr5[i].className === "box blue") {
+    continue; // skip the blue box
+  }
+  boxesArr5[i].textContent = "Different text!"
+}
+*/
+
+// ES6, forOf-loop
+for (const cur of boxesArr6) {
+  if (cur.className.includes("blue")) {
+    continue; // Skip the blue box
+  }
+  cur.textContent = "Different text!"
+}
+
+// This is also cool
+const numbers = [8, 16, 32, 64];
+// Find the first entry where callback function returns true
+console.log(numbers.findIndex(cur => cur >= 20));
+console.log(numbers.find(cur => cur >= 20));
+
+////////////////////////////////////
+// Lecture: Spread Operator
+function addFourNumbers(a, b, c, d) {
+  return a + b + c + d;
+}
+// How do we input an array into this?
+// ES5, this is BULLSHIT!!!11!1!
+console.log(addFourNumbers.apply(null, numbers));
+
+// ES6 with spread operator
+console.log(addFourNumbers(...numbers));
+
+// Spread operator can also be used to combine arrays
+const punyArray1 = [1, 1, 2, 3];
+const punyArray2 = [5, 8, 13, 21];
+const bigArray = [...punyArray1, ...punyArray2];
+console.log(bigArray);
+
+///////////////////////////////////
+// Lecture: Rest parameters
+function thisHasRestParameters(param1, param2, ...restOfParams) {
+  console.log(param1);
+  console.log(param2);
+  console.log(restOfParams);
+}
+thisHasRestParameters(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+
+/////////////////////////////////////////////
+// Lecture: Default parameters
+function Person(firstName, lastName, hairColor = "brown") {
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.hairColor = hairColor;
+}
+
+let brandNewJohn = new Person("John", "Smith"); // Default value for hair color, wow!
+console.log(brandNewJohn);
+
+/////////////////////////////////////////
+// Lecture: (Hash)Maps
+const question = new Map();
+
+// Very silly example. Question card thing with question, answer alternatives,
+// correct answer number, and correct/wrong responses
+question.set("question", "What is the official name of Sven Johansson?");
+question.set(1, "Sven Johansson");
+question.set(2, "Knut Gunnarsson");
+question.set(3, "Johan Svensson");
+question.set("correct", 1);
+question.set(true, "Yes :)");
+question.set(false, "YOU STUPID");
+
+console.log(question.get("question"));
+for (let [key, value] of question.entries()) {
+  if (typeof(key) === "number") {
+    console.log(`${key}. ${value}`);
+  }
+}
+
+// Never uncomment this, it's annoying as shit. But it works.
+//const ans = parseInt(prompt("Type correct answer!"));
+//alert(question.get(question.get("correct") === ans));
+
+/////////////////////////////////////////////
+// Lecture: Classes... finally!
+class ClassyPerson {
+  // No overloaded constructor, but we can have
+  constructor(firstName, lastName, hairColor = "fiery red") {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.hairColor = hairColor;
+  }
+
+  printInfo() {
+    console.log(`${this.firstName} ${this.lastName} has ${this.hairColor} hair.`);
+  }
+
+  static helperFunction() {
+    console.log("I'm helping!!!");
+  }
+}
+const classyPersonObject = new ClassyPerson("Emma", "Karlsson");
+classyPersonObject.printInfo();
+ClassyPerson.helperFunction();
+
+//////////////////////////////////////////////
+// Lecture: Classes with subclasses
+class Athlete extends ClassyPerson {
+  constructor(firstName, lastName, hairColor, olympicGames, medals) {
+    super(firstName, lastName, hairColor);
+    this.olympicGames = olympicGames;
+    this.medals = medals;
+  }
+
+  wonMedal() {
+    this.medals++;
+    console.log(`${this.firstName} ${this.lastName} has a new medal! Now ${this.medals} medals total!`);
+  }
+}
+const classyAthlete = new Athlete("Tina", "Torstensson", "greasy brown", 2, 1);
+classyAthlete.printInfo(); // inherited method!!
+Athlete.helperFunction(); // inherited method!!
+classyAthlete.wonMedal(); // not inherited!!!
+classyAthlete.wonMedal(); // not inherited!!!
+classyAthlete.wonMedal(); // not inherited!!!
