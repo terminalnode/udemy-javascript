@@ -1,5 +1,6 @@
 import { elements, clearLoader, renderLoader }  from "./views/base"
 import * as searchView from "./views/searchView";
+import * as recipeView from "./views/recipeView";
 import Search from "./models/Search";
 import Recipe from "./models/Recipe";
 
@@ -35,14 +36,19 @@ const controlRecipe = async () => {
   if (id) {
     // Create new recipe
     state.recipe = new Recipe(id);
+    renderLoader(elements.recipe);
 
-    // Load recipe information
     try {
+      // Load recipe information
       await state.recipe.getRecipe();
       state.recipe.calcServings();
       state.recipe.calcTime();
       state.recipe.parseIngredients();
-      console.log(state.recipe);
+
+      // Render recipe
+      clearLoader();
+      recipeView.renderRecipe(state.recipe);
+
     } catch (err) {
       console.log(err);
       console.log("Failed to load recipe!");
