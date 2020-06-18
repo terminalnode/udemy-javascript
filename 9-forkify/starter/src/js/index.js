@@ -1,13 +1,28 @@
-/* Note to self:
- The API the course originally used doesn't work anymore,
- but fret not for Jonas made us a replacement API. This API
- does not require any API key or proxy, and the URL is:
- forkify-api.herokuapp.com (where there's also some basic documentation)
-
- Remove all instances of ${PROXY} and ${KEY} from the course material.
-*/
-
+import { elements }  from "./views/base"
+import * as searchView from "./views/searchView";
 import Search from "./models/Search";
 
-const search = new Search("pizza");
-search.getResults();
+/** Global state of the app
+ * - Search object
+ * - Current recipe object
+ * - Shopping list object
+ * - Liked recipes
+ */
+const state = {};
+
+const controlSearch = async () => {
+  const query = searchView.getInput();
+
+  if (query) {
+    state.search = new Search(query);
+    searchView.clearInput();
+    await state.search.getResults();
+    searchView.renderResults(state.search.result);
+  }
+};
+
+// Add event listeners
+elements.searchForm.addEventListener("submit", e => {
+  e.preventDefault();
+  controlSearch();
+});
