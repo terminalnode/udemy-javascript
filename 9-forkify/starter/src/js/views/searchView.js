@@ -15,7 +15,6 @@ const limitRecipeTitle = (title, limit = 17) => {
     const wordList = title.split(" ");
     if (wordList[0].length > limit) {
       newTitle.push(wordList[0].substr(0, limit));
-      console.log(newTitle);
 
     } else {
       // Otherwise take as many words as you can without
@@ -50,7 +49,41 @@ const renderRecipe = recipe => {
   elements.searchResultList.insertAdjacentHTML("beforeend", markup);
 }
 
-export const renderResults = recipes => {
+const createButton = (page, type) => {
+  const leftRight = type === "next" ? "right" : "left";
+  return `
+  <button class="btn-inline results__btn--${type}" data-goto=${page}>
+    <span>Page ${page}</span>
+    <svg class="search__icon">
+      <use href="img/icons.svg#icon-triangle-${leftRight}"></use>
+    </svg>
+  </button>`;
+};
+
+const renderButtons = (page, results, resultsPerPage = 10) => {
+  const pages = Math.ceil(results.length / resultsPerPage);
+
+  // Render previous page button
+  if (page > 1) {
+    const backButton = createButton(page - 1, "prev");
+    elements.searchResultPages.insertAdjacentHTML("afterbegin", backButton);
+  }
+
+  // Render next page button
+  if (page < pages) {
+    const forwardButton = createButton(page + 1, "next");
+    elements.searchResultPages.insertAdjacentHTML("afterbegin", forwardButton);
+  }
+}
+
+export const renderResults = (recipes, page = 1, resultsPerPage = 10) => {
   elements.searchResultList.innerHTML = "";
-  recipes.forEach(renderRecipe);
+  elements.searchResultPages.innerHTML = "";
+
+  const start = (page - 1) * resultsPerPage;
+  const end = start + resultsPerPage;
+  recipes
+    .slice(start, end)
+    .forEach(renderRecipe);
+  renderButtons(page, recipes, resultsPerPage);
 };
