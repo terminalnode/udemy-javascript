@@ -18,7 +18,7 @@ export const renderRecipe = recipe => {
 
   const markup = `
     <figure class="recipe__fig">
-      <img src="${recipe.img}" alt="${recipe.title} class="recipe__img">
+      <img src="${recipe.img}" alt="${recipe.title}" class="recipe__img">
       <h1 class="recipe__title">
         <span>${recipe.title}</span>
       </h1>
@@ -60,7 +60,7 @@ export const renderRecipe = recipe => {
           <use href="img/icons.svg#icon-heart-outlined"></use>
         </svg>
       </button>
-    </div> <!-- End recipe details -->
+    </div>
 
     <div class="recipe__ingredients">
       <ul class="recipe__ingredient-list">
