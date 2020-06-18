@@ -30,4 +30,62 @@ export default class Recipe {
     // Currently we just assume that every recipe is four servings.
     this.servings = 4;
   }
+
+  parseIngredients() {
+    const unitsLong = [ "tablespoons", "tablespoon", "ounces", "ounce", "teaspoons", "teaspoon", "cups", "pounds" ];
+    const unitsShort = [ "tbsp", "tbsp", "oz", "oz", "tsp", "tsp", "cup", "pound" ];
+
+    const newIngredients = this.ingredients.map(ingredient => {
+      // Make units uniform
+      ingredient = ingredient.toLowerCase();
+      unitsLong.forEach((unit, i) => {
+        ingredient = ingredient.replace(unit, unitsShort[i])
+      });
+
+      // Remove anything in parenthesis
+      ingredient = ingredient.replace(/ *\([^)]*\) */g, " ");
+
+      // Split ingredients into amount, unit, name
+      const ingredientArray = ingredient.split(" ");
+      const unitIndex = ingredientArray.findIndex(el => unitsShort.includes(el));
+
+      let ingredientObject;
+      if (unitIndex > -1) {
+        // There is a unit
+        const arrayCount = ingredientArray.slice(0, unitIndex);
+
+        let count;
+        if (arrayCount.length === 1) {
+          count = eval(ingredientArray[0].replace("-", "+"));
+        } else {
+          count = eval(ingredientArray.slice(0, unitIndex).join("+"));
+        }
+
+        ingredientObject = {
+          count,
+          unit: ingredientArray[unitIndex],
+          ingredient: ingredientArray.slice(unitIndex + 1).join(" ")
+        }
+
+      } else if (parseInt(ingredientArray[0], 10)) {
+        // There is no unit, but first element is a number
+        ingredientObject = {
+          count: parseInt(ingredientArray[0], 10),
+          unit: "",
+          ingredient: ingredientArray.slice(1).join(" ")
+        }
+
+      } else if (unitIndex === -1) {
+        // No unit and no number
+        ingredientObject = {
+          count: 1,
+          unit: "",
+          ingredient
+        };
+      }
+
+      return ingredientObject;
+    });
+    this.ingredients = newIngredients;
+  }
 }
