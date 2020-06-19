@@ -37,6 +37,9 @@ const controlRecipe = async () => {
     // Create new recipe
     state.recipe = new Recipe(id);
     renderLoader(elements.recipe);
+    if (state.search) {
+      searchView.highlightSelected(id);
+    }
 
     try {
       // Load recipe information
