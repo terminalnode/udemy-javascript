@@ -1,4 +1,5 @@
 import { clearLoader, elements, renderLoader }  from "./views/base"
+import * as listView from "./views/listView";
 import * as recipeView from "./views/recipeView";
 import * as searchView from "./views/searchView";
 import List from "./models/List";
@@ -58,7 +59,18 @@ const controlRecipe = async () => {
       console.log("Failed to load recipe!");
     }
   }
-}
+};
+
+const controlList = () => {
+  if (!state.list) {
+    state.list = new List();
+  }
+
+  state.recipe.ingredients.forEach( el => {
+    const item = state.list.addItem(el.count, el.unit, el.ingredient);
+    listView.renderItem(item);
+  });
+};
 
 // Add event listeners
 elements.searchForm.addEventListener("submit", e => {
@@ -75,6 +87,7 @@ elements.searchResultPages.addEventListener("click", e => {
 });
 
 ["hashchange", "load"].forEach(event => window.addEventListener(event, controlRecipe));
+
 elements.recipe.addEventListener("click", e => {
   if (state.recipe.servings > 1 && e.target.matches(".btn-decrease, .btn-decrease *")) {
     state.recipe.updateServings("dec");
@@ -82,5 +95,20 @@ elements.recipe.addEventListener("click", e => {
   } else if (e.target.matches(".btn-increase, .btn-increase *")) {
     state.recipe.updateServings("inc");
     recipeView.updateServingsIngredients(state.recipe);
+  } else if (e.target.matches(".recipe__btn--add, .recipe__btn--add *")) {
+    controlList();
+  }
+});
+
+elements.shopping.addEventListener("click", e => {
+  const id = e.target.closest(".shopping__item").dataset.itemid;
+
+  if (e.target.matches(".shopping__delete, .shopping__delete *")) {
+    state.list.deleteItem(id);
+    listView.deleteItem(id);
+  } else if (e.target.matches(".shopping__count-value")) {
+    const value = parseFloat(e.target.value);
+    state.list.updateCount(id, value);
+    console.log(state.list);
   }
 });
