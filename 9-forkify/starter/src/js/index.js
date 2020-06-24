@@ -1,7 +1,9 @@
 import { clearLoader, elements, renderLoader }  from "./views/base"
+import * as likesView from "./views/likesView";
 import * as listView from "./views/listView";
 import * as recipeView from "./views/recipeView";
 import * as searchView from "./views/searchView";
+import Likes from "./models/Likes";
 import List from "./models/List";
 import Recipe from "./models/Recipe";
 import Search from "./models/Search";
@@ -52,7 +54,10 @@ const controlRecipe = async () => {
 
       // Render recipe
       clearLoader();
-      recipeView.renderRecipe(state.recipe);
+      recipeView.renderRecipe(
+        state.recipe,
+        state.likes.isLiked(id)
+        );
 
     } catch (err) {
       console.log(err);
@@ -72,7 +77,46 @@ const controlList = () => {
   });
 };
 
+const controlLike = () => {
+  const currentId = state.recipe.id;
+  if (!state.likes.isLiked(currentId)) {
+    // Add like to state
+    const newLike = state.likes.addLike(
+      currentId,
+      state.recipe.title,
+      state.recipe.author,
+      state.recipe.img
+    );
+
+    // Toggle like button
+    likesView.toggleLikeButton(true);
+
+    // Add like to UI list
+    likesView.renderLike(newLike);
+
+  } else {
+    // Remove like from state
+    state.likes.deleteLike(currentId);
+
+    // Toggle like button
+    likesView.toggleLikeButton(false);
+
+    // Remove like from UI list
+    likesView.deleteLike(currentId);
+  }
+
+  likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+}
+
 // Add event listeners
+window.addEventListener("load", () => {
+  state.likes = new Likes();
+  state.likes.readStorage();
+  likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+  
+  state.likes.likes.forEach(like => likesView.renderLike(like));
+});
+
 elements.searchForm.addEventListener("submit", e => {
   e.preventDefault();
   controlSearch();
@@ -97,6 +141,8 @@ elements.recipe.addEventListener("click", e => {
     recipeView.updateServingsIngredients(state.recipe);
   } else if (e.target.matches(".recipe__btn--add, .recipe__btn--add *")) {
     controlList();
+  } else if (e.target.matches(".recipe__love, .recipe__love *")) {
+    controlLike();
   }
 });
 
